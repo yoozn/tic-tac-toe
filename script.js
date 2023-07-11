@@ -175,6 +175,35 @@ const pageManager = (function() {
     const initialize = () => {
         Gameboard.createBoard();
         Gameboard.updateBoard();
+
+        const twoPlayerSelect = document.querySelector(".two-p-container");
+        const onePlayerContainer = document.querySelector(".one-p-container")
+        const onePlayerEasy = document.querySelector(".easy-container");
+        const onePlayerHard = document.querySelector(".hard-container");
+
+        twoPlayerSelect.addEventListener('click', () => {
+            mode = "2P";
+            twoPlayerSelect.style.backgroundColor = "rgb(255, 178, 78)";
+            onePlayerContainer.style.backgroundColor = "rgb(255, 209, 111)";
+            onePlayerEasy.style.backgroundColor = "rgb(255, 209, 111)";
+            onePlayerHard.style.backgroundColor = "rgb(255, 209, 111)";
+        });
+
+        onePlayerEasy.addEventListener('click', () => {
+            mode = "1PEasy";
+            twoPlayerSelect.style.backgroundColor = "rgb(255, 209, 111)";
+            onePlayerContainer.style.backgroundColor = "rgb(255, 178, 78)";
+            onePlayerEasy.style.backgroundColor = "rgb(255, 178, 78)";
+            onePlayerHard.style.backgroundColor = "rgb(255, 209, 111)";
+        });
+
+        onePlayerHard.addEventListener('click', () => {
+            mode = "1PHard";
+            twoPlayerSelect.style.backgroundColor ="rgb(255, 209, 111)";
+            onePlayerContainer.style.backgroundColor = "rgb(255, 178, 78)";
+            onePlayerEasy.style.backgroundColor = "rgb(255, 209, 111)";
+            onePlayerHard.style.backgroundColor = "rgb(255, 178, 78)";
+        });
     }
 
     const switchTurn = () => {
