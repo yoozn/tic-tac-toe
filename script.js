@@ -26,7 +26,11 @@ const Player = (newName, newSymbol) => {
 const Gameboard = (function() {
     let gameboard = [];
     const createBoard = () => {
-        const gameboardContainer = document.querySelector(".gameboard-container");
+        const mainContainer = document.querySelector(".main");
+        const gameboardContainer = document.createElement("div");
+        gameboardContainer.classList.add("gameboard-container");
+        mainContainer.appendChild(gameboardContainer);
+        
         const gameSquare = (x_coord, y_coord) => {
             let x = x_coord;
             let y = y_coord;
@@ -99,6 +103,14 @@ const Gameboard = (function() {
         }
     }
 
+    const resetBoard = () => {
+        gameboard = [];
+        const main = document.querySelector(".main");
+        console.log(main);
+        main.removeChild(main.firstElementChild);
+        createBoard();
+    }
+
     const checkWin = (square) => {
         let x = square.x;
         let y = square.y;
@@ -151,9 +163,9 @@ const Gameboard = (function() {
                     //switch turn method is called before this function, so the symbols are opposite of intuition
                     const newSquare = gameboard.filter(sqr => {
                         return (sqr.x == x_coord && sqr.y == y_coord);
-                    })
-                    console.log(newSquare[0]);
-                    if (newSquare[0].symbol == (pageManager.isPlayerTurn() ? pageManager.computer.getSymbol() : pageManager.user.getSymbol())) {
+                    })[0];
+                    console.log(newSquare);
+                    if (newSquare.symbol == (pageManager.isPlayerTurn() ? pageManager.computer.getSymbol() : pageManager.user.getSymbol())) {
                         if (firstIteration == false) {
                             if (direction == "right" || direction == "left") horzCount++;
                             if (direction == "up" || direction == "down") vertCount++;
@@ -176,10 +188,10 @@ const Gameboard = (function() {
 
         console.log({horzCount, vertCount, diagLRCount, diagRLCount});
         if (vertCount >= 3 || horzCount >= 3 || diagLRCount >= 3 || diagRLCount >= 3) {
-            console.log("WIN");
+            pageManager.isPlayerTurn() ? pageManager.win(pageManager.computer) : pageManager.win(pageManager.user);
         }
     }
-    return {gameboard, createBoard, updateBoard};
+    return {gameboard, createBoard, updateBoard, resetBoard};
 })();
 
 const pageManager = (function() {
@@ -214,7 +226,13 @@ const pageManager = (function() {
 
     const getPieceCount = () => pieceCount;
 
-    return {user, computer, initialize, switchTurn, isPlayerTurn, switchMode, getMode, piecePlaced, getPieceCount};
+    const win = (player) => {
+        player.win();
+        alert(`${player.getName()} wins! Score: ${player.getWins()}`);
+        Gameboard.resetBoard();
+    }
+
+    return {user, computer, initialize, switchTurn, isPlayerTurn, switchMode, getMode, piecePlaced, getPieceCount, win};
 })();
 
 pageManager.initialize();
