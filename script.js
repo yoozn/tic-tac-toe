@@ -49,7 +49,7 @@ const Gameboard = (function() {
                 gameboardContainer.appendChild(newSquare);
 
                 newSquare.addEventListener('mouseover', () => {
-                    if (square.symbol == "none") {
+                    if (square.symbol == "none" && (pageManager.getMode() == "2P" || pageManager.isPlayerTurn())) {
                         square.symbol = "hover";
                         const symbol = document.createElement('img');
                         if (pageManager.isPlayerTurn()) {
@@ -74,38 +74,56 @@ const Gameboard = (function() {
                 newSquare.addEventListener('click', () => {
                     if (square.symbol == "none" || square.symbol == "hover") {
                         if (pageManager.isPlayerTurn()) {
-                            pageManager.piecePlaced();
-                            pageManager.switchTurn();
                             square.symbol = pageManager.user.getSymbol();
-                            // console.log(gameboard);
                         }
                         else {
                             if (pageManager.getMode() == "2P") {
-                                pageManager.piecePlaced();
-                                pageManager.switchTurn();
                                 square.symbol = pageManager.computer.getSymbol();
-                                // console.log(gameboard);
                             }
                         }
+                        pageManager.piecePlaced();
+                        pageManager.switchTurn();
                     }
-                    if (pageManager.getPieceCount() > 4) {
-                        console.log("checking");
+                    if (pageManager.getPieceCount() > 3) {
+                        console.log(square);
                         checkWin(square);
                     }
+
+                    if (pageManager.getMode() == "1PEasy" && pageManager.getPieceCount() < 9 && !pageManager.isPlayerTurn()) {
+                        const freeSpaces = gameboard.filter( sqr => {
+                            return sqr.symbol == "none";
+                        });
+                        // console.log({"Freespaces": freeSpaces});
+                        const randomIndex = Math.floor(Math.random() * freeSpaces.length);
+                        const randomSquare = freeSpaces[randomIndex];
+                        const squareToPlaceIndex = gameboard.indexOf(randomSquare);
+                        gameboard[squareToPlaceIndex].symbol = pageManager.computer.getSymbol();
+                        const squareElement = gameboardContainer.childNodes[squareToPlaceIndex];
+                        const symbol = document.createElement('img');
+                        symbol.classList.add(`${pageManager.user.getSymbol() == "X" ? "o-img" : "x-img"}`);
+                        symbol.src = `${pageManager.user.getSymbol() == "X" ? "images/o.png" : "images/x-png"}`;
+                        squareElement.appendChild(symbol);
+                        pageManager.piecePlaced();
+                        pageManager.switchTurn();
+                        checkWin(gameboard[squareToPlaceIndex]);
+                        console.log(gameboard[squareToPlaceIndex]);
+                    };
                 });
             }
         }
 
     };
 
-    const updateBoard = () => {
-        for (square of gameboard) {
+    // const updateBoard = () => {
+    //     for (square of gameboard) {
 
-        }
-    }
+    //     }
+    // }
 
     const resetBoard = () => {
         gameboard = [];
+        console.log("RESET GAMEBOARD");
+        console.log(gameboard);
         const main = document.querySelector(".main");
         console.log(main);
         main.removeChild(main.querySelector(".gameboard-container"));
@@ -113,6 +131,7 @@ const Gameboard = (function() {
     }
 
     const checkWin = (square) => {
+        console.log("checking");
         let x = square.x;
         let y = square.y;
         let vertCount = 1;
@@ -136,14 +155,16 @@ const Gameboard = (function() {
                 const newSquare = gameboard.filter(sqr => {
                     return (sqr.x == x_coord && sqr.y == y_coord);
                 })[0];
-                if (newSquare.symbol == (pageManager.isPlayerTurn() ? pageManager.computer.getSymbol() : pageManager.user.getSymbol())) {
-                    if (firstIteration == false) {
-                        if (direction == "right" || direction == "left") horzCount++;
-                        if (direction == "up" || direction == "down") vertCount++;
-                        if (direction == "diagLRdown" || direction == "diagLRup") diagLRCount++;
-                        if (direction == "diagRLdown" || direction == "diagRLup") diagRLCount++;
+                if (newSquare.symbol == "X" || newSquare.symbol == "O") {
+                    if (newSquare.symbol == (pageManager.isPlayerTurn() ? pageManager.computer.getSymbol() : pageManager.user.getSymbol())) {
+                        if (firstIteration == false) {
+                            if (direction == "right" || direction == "left") horzCount++;
+                            if (direction == "up" || direction == "down") vertCount++;
+                            if (direction == "diagLRdown" || direction == "diagLRup") diagLRCount++;
+                            if (direction == "diagRLdown" || direction == "diagRLup") diagRLCount++;
+                        }
+                        checkSquares(newX, newY, direction, false);
                     }
-                    checkSquares(newX, newY, direction, false);
                 }
         }
     }
@@ -162,7 +183,7 @@ const Gameboard = (function() {
             pageManager.isPlayerTurn() ? pageManager.win(pageManager.computer) : pageManager.win(pageManager.user);
         }
     }
-    return {gameboard, createBoard, updateBoard, resetBoard};
+    return {gameboard, createBoard, resetBoard};
 })();
 
 const pageManager = (function() {
@@ -174,7 +195,7 @@ const pageManager = (function() {
 
     const initialize = () => {
         Gameboard.createBoard();
-        Gameboard.updateBoard();
+        // Gameboard.updateBoard();
 
         const twoPlayerSelect = document.querySelector(".two-p-container");
         const onePlayerContainer = document.querySelector(".one-p-container")
@@ -227,8 +248,11 @@ const pageManager = (function() {
     const getPieceCount = () => pieceCount;
 
     const win = (player) => {
+        console.log("triggered");
         player.win();
         alert(`${player.getName()} wins! Score: ${player.getWins()}`);
+        pieceCount = 0;
+        playerTurn = true;
         Gameboard.resetBoard();
     }
 
@@ -236,5 +260,5 @@ const pageManager = (function() {
 })();
 
 pageManager.initialize();
-console.log(pageManager.user);
-console.log(pageManager.user.getSymbol());
+// console.log(pageManager.user);
+// console.log(pageManager.user.getSymbol());
