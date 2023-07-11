@@ -48,17 +48,39 @@ const Gameboard = (function() {
                     if (square.symbol == "none") {
                         square.symbol = "hover";
                         const symbol = document.createElement('img');
-                        symbol.classList.add("x-img");
-                        symbol.src = "images/x.png";
+                        if (pageManager.isPlayerTurn()) {
+                            symbol.classList.add(`${pageManager.user.getSymbol() == "X" ? "x-img" : "o-img"}`);
+                            symbol.src = `${pageManager.user.getSymbol() == "X" ? "images/x.png" : "images/o-png"}`;
+                        } else {
+                            symbol.classList.add(`${pageManager.user.getSymbol() == "X" ? "o-img" : "x-img"}`);
+                            symbol.src = `${pageManager.user.getSymbol() == "X" ? "images/o.png" : "images/x-png"}`;
+                        }
+                        symbol.classList.add("hover");
                         newSquare.appendChild(symbol);
                     }
                 });
                 newSquare.addEventListener('mouseleave', () => {
-                    square.symbol = "none";
-                    newSquare.removeChild(newSquare.firstChild);
+                    if (square.symbol == "hover") {
+                        square.symbol = "none";
+                        const childImg = newSquare.querySelector(".hover");
+                        newSquare.removeChild(childImg);
+                    }
                 });
                 newSquare.addEventListener('click', () => {
-
+                    if (square.symbol == "none" || square.symbol == "hover") {
+                        if (pageManager.isPlayerTurn()) {
+                            pageManager.switchTurn();
+                            square.symbol = pageManager.user.getSymbol();
+                            console.log(gameboard);
+                        }
+                        else {
+                            if (pageManager.getMode() == "2P") {
+                                pageManager.switchTurn();
+                                square.symbol = pageManager.computer.getSymbol();
+                                console.log(gameboard);
+                            }
+                        }
+                    }
                 });
             }
         }
@@ -74,16 +96,33 @@ const Gameboard = (function() {
 })();
 
 const pageManager = (function() {
-    let user;
-    let computer;
+    const user = Player("User", "X");
+    const computer = Player("Computer", "0");
+    let playerTurn = true;
+    let mode = "2P"
+
     const initialize = () => {
-        user = Player("User", "X");
-        computer = Player("Computer", "0");
         Gameboard.createBoard();
         Gameboard.updateBoard();
     }
 
-    return {user, computer, initialize};
+    const switchTurn = () => {
+        playerTurn = !playerTurn;
+    }
+
+    const isPlayerTurn = () => {
+        return playerTurn;
+    }
+
+    const switchMode = (newMode) => {
+        mode = newMode;
+    }
+
+    const getMode = () => mode;
+
+    return {user, computer, initialize, switchTurn, isPlayerTurn, switchMode, getMode};
 })();
 
 pageManager.initialize();
+console.log(pageManager.user);
+console.log(pageManager.user.getSymbol());
