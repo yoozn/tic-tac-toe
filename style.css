@@ -8,6 +8,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    border: 2px solid red;
 }
 
 .container {
@@ -39,4 +40,31 @@
     width: 20vw;
     left: 0;
     color:rgb(0, 0, 0);
+}
+
+.main {
+    display:grid;
+}
+
+.gameboard-container {
+    display:grid;
+    height: 80vh;
+    width: 80vh;
+    align-self: center;
+    justify-self: center;
+    grid-template-columns: repeat(3, calc(80vh / 3));
+    grid-template-rows: repeat(3, calc(80vh / 3));
+}
+
+.square {
+    display:flex;
+    height:100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+.x-img,
+.o-img {
+    width: 70%;
 }
