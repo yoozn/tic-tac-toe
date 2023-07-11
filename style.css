@@ -67,4 +67,5 @@
 .x-img,
 .o-img {
     width: 70%;
+    user-select: none;
 }
