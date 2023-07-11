@@ -1,5 +1,28 @@
 
 
+const Player = (newName, newSymbol) => {
+    let name = newName;
+    let symbol = newSymbol;
+    let wins = 0;
+
+    const setSymbol = (newSymbol) => {
+        symbol = newSymbol;
+    }
+    const getSymbol = () => symbol;
+
+    const setName = (newName) => {
+        name = newName;
+    }
+    const getName = () => name;
+
+    const win = () => {
+        wins++;
+    }
+    const getWins = () => wins;
+
+    return {setSymbol, getSymbol, setName, getName, win, getWins};
+}
+
 const Gameboard = (function() {
     let gameboard = [];
     const createBoard = () => {
@@ -20,6 +43,7 @@ const Gameboard = (function() {
                 newSquare.dataset.x= square.x;
                 newSquare.dataset.y= square.y;
                 gameboardContainer.appendChild(newSquare);
+
                 newSquare.addEventListener('mouseover', () => {
                     if (square.symbol == "none") {
                         square.symbol = "hover";
@@ -28,11 +52,14 @@ const Gameboard = (function() {
                         symbol.src = "images/x.png";
                         newSquare.appendChild(symbol);
                     }
-                })
+                });
                 newSquare.addEventListener('mouseleave', () => {
                     square.symbol = "none";
                     newSquare.removeChild(newSquare.firstChild);
-                })
+                });
+                newSquare.addEventListener('click', () => {
+
+                });
             }
         }
 
@@ -46,6 +73,17 @@ const Gameboard = (function() {
     return {gameboard, createBoard, updateBoard};
 })();
 
-Gameboard.createBoard();
-Gameboard.updateBoard();
-console.log(Gameboard.gameboard);
+const pageManager = (function() {
+    let user;
+    let computer;
+    const initialize = () => {
+        user = Player("User", "X");
+        computer = Player("Computer", "0");
+        Gameboard.createBoard();
+        Gameboard.updateBoard();
+    }
+
+    return {user, computer, initialize};
+})();
+
+pageManager.initialize();
