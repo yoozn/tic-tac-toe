@@ -69,17 +69,23 @@ const Gameboard = (function() {
                 newSquare.addEventListener('click', () => {
                     if (square.symbol == "none" || square.symbol == "hover") {
                         if (pageManager.isPlayerTurn()) {
+                            pageManager.piecePlaced();
                             pageManager.switchTurn();
                             square.symbol = pageManager.user.getSymbol();
-                            console.log(gameboard);
+                            // console.log(gameboard);
                         }
                         else {
                             if (pageManager.getMode() == "2P") {
+                                pageManager.piecePlaced();
                                 pageManager.switchTurn();
                                 square.symbol = pageManager.computer.getSymbol();
-                                console.log(gameboard);
+                                // console.log(gameboard);
                             }
                         }
+                    }
+                    if (pageManager.getPieceCount() > 4) {
+                        console.log("checking");
+                        checkWin(square);
                     }
                 });
             }
@@ -92,14 +98,96 @@ const Gameboard = (function() {
 
         }
     }
+
+    const checkWin = (square) => {
+        let x = square.x;
+        let y = square.y;
+        // console.log(index);
+
+        let vertCount = 1;
+        let horzCount = 1;
+        let diagLRCount = 1;
+        let diagRLCount = 1;
+
+        // const checkSquares = (index, direction, firstIteration = true) => {
+        //     if (index < 9 && index >= 0) {
+        //         let newIndex = index;
+        //         if (direction == "right") newIndex++;
+        //         if (direction == "left") newIndex--;
+        //         if (direction == "up") newIndex-=3;
+        //         if (direction == "down") newIndex+=3;
+        //         if (direction == "diagLRdown") newIndex+=4;
+        //         if (direction == "diagLRup") newIndex-=4;
+        //         if (direction == "diagRLup") newIndex-=2;
+        //         if (direction == "diagRLdown") newIndex+=2;
+        //         // console.log(gameboard[index].symbol);
+        //         // console.log(pageManager.isPlayerTurn() ? pageManager.user.getSymbol() : pageManager.computer.getSymbol());
+        //         //switch turn method is called before this function, so the symbols are opposite of intuition
+        //         if (gameboard[index].symbol == (pageManager.isPlayerTurn() ? pageManager.computer.getSymbol() : pageManager.user.getSymbol())) {
+        //             if (firstIteration == false) {
+        //                 if (direction == "right" || direction == "left") horzCount++;
+        //                 if (direction == "up" || direction == "down") vertCount++;
+        //                 if (direction == "diagLRdown" || direction == "diagLRup") diagLRCount++;
+        //                 if (direction == "diagRLdown" || direction == "diagRLup") diagRLCount++;
+        //             }
+        //             checkSquares(newIndex, direction, false);
+        //         }
+        //     }
+        // }
+            const checkSquares = (x_coord,y_coord, direction, firstIteration = true) => {
+                if ((x_coord < 3 && x_coord >= 0) && (y_coord < 3 && y_coord >= 0)) {
+                    let newX = x_coord;
+                    let newY = y_coord;
+                    if (direction == "right") newX++;
+                    if (direction == "left") newX--;
+                    if (direction == "up") newY--;
+                    if (direction == "down") newY++;
+                    if (direction == "diagLRdown") {newX++; newY++;};
+                    if (direction == "diagLRup") {newX--; newY--;};
+                    if (direction == "diagRLup") {newX++;newY--;};
+                    if (direction == "diagRLdown") {newX--;newY++;};
+                    // console.log(gameboard[index].symbol);
+                    // console.log(pageManager.isPlayerTurn() ? pageManager.user.getSymbol() : pageManager.computer.getSymbol());
+                    //switch turn method is called before this function, so the symbols are opposite of intuition
+                    const newSquare = gameboard.filter(sqr => {
+                        return (sqr.x == x_coord && sqr.y == y_coord);
+                    })
+                    console.log(newSquare[0]);
+                    if (newSquare[0].symbol == (pageManager.isPlayerTurn() ? pageManager.computer.getSymbol() : pageManager.user.getSymbol())) {
+                        if (firstIteration == false) {
+                            if (direction == "right" || direction == "left") horzCount++;
+                            if (direction == "up" || direction == "down") vertCount++;
+                            if (direction == "diagLRdown" || direction == "diagLRup") diagLRCount++;
+                            if (direction == "diagRLdown" || direction == "diagRLup") diagRLCount++;
+                        }
+                        checkSquares(newX, newY, direction, false);
+                    }
+            }
+        }
+
+        checkSquares(x, y, "right");
+        checkSquares(x, y, "left");
+        checkSquares(x, y, "up");
+        checkSquares(x, y, "down");
+        checkSquares(x, y, "diagLRdown");
+        checkSquares(x, y, "diagLRup");
+        checkSquares(x, y, "diagRLdown");
+        checkSquares(x, y, "diagRLup");
+
+        console.log({horzCount, vertCount, diagLRCount, diagRLCount});
+        if (vertCount >= 3 || horzCount >= 3 || diagLRCount >= 3 || diagRLCount >= 3) {
+            console.log("WIN");
+        }
+    }
     return {gameboard, createBoard, updateBoard};
 })();
 
 const pageManager = (function() {
     const user = Player("User", "X");
-    const computer = Player("Computer", "0");
+    const computer = Player("Computer", "O");
     let playerTurn = true;
     let mode = "2P"
+    let pieceCount = 0;
 
     const initialize = () => {
         Gameboard.createBoard();
@@ -120,7 +208,13 @@ const pageManager = (function() {
 
     const getMode = () => mode;
 
-    return {user, computer, initialize, switchTurn, isPlayerTurn, switchMode, getMode};
+    const piecePlaced = () => {
+        pieceCount++;
+    }
+
+    const getPieceCount = () => pieceCount;
+
+    return {user, computer, initialize, switchTurn, isPlayerTurn, switchMode, getMode, piecePlaced, getPieceCount};
 })();
 
 pageManager.initialize();
