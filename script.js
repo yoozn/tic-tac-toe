@@ -93,13 +93,13 @@ const Gameboard = (function() {
                         won = checkWin(square, "user");
                         console.log({"won" : won});
                     }
-
-                    if (pageManager.getMode() == "1PEasy" && pageManager.getPieceCount() < 9 && !pageManager.isPlayerTurn() && !won) {
+                    //piece count gets set to 0 after a tie, so an array entry is added after the game is reset w.o. the middle conditional (6hrs to find...)
+                    if (pageManager.getMode() == "1PEasy" && pageManager.getPieceCount() > 0 && !pageManager.isPlayerTurn() && !won) {
                         const freeSpaces = gameboard.filter( sqr => {
                             return sqr.symbol == "none";
                         });
                         // console.log({"Freespaces": freeSpaces});
-                        console.log("execute");
+                        console.log("execute", pageManager.getPieceCount());
                         const randomIndex = Math.floor(Math.random() * freeSpaces.length);
                         const randomSquare = freeSpaces[randomIndex];
                         const squareToPlaceIndex = gameboard.indexOf(randomSquare);
@@ -118,7 +118,7 @@ const Gameboard = (function() {
                 });
             }
         }
-
+        console.log({"created": gameboard});
     };
 
     // const updateBoard = () => {
@@ -130,7 +130,7 @@ const Gameboard = (function() {
     const resetBoard = () => {
         gameboard = [];
         console.log("RESET GAMEBOARD");
-        alert(gameboard);
+        // alert(gameboard);
         console.log(gameboard);
         const main = document.querySelector(".main");
         // console.log(main);
