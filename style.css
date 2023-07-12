@@ -28,7 +28,7 @@
     grid-template-rows: 1fr 0fr;
     height: 100vh;
     width: 100vw;
-    bottom: 0vh;
+    bottom: 92vh;
     /* background-color: var(--header-colour); */
     background-color: rgba(255, 233, 134, 0.35);
     box-shadow: 0px 0px 7px 2px black;
@@ -81,11 +81,41 @@
 }
 
 .footer {
-    height: 10vh;
+    position: relative;
+    height: 8vh;
     background-color: rgb(255, 233, 134);
     grid-column: 1 / -1;
     margin-top: 10px;
     display: grid;
+    grid-template-rows: 0fr;
+    grid-auto-flow: column;
+    align-items: center;
+}
+
+.logo-link {
+    justify-self: end;
+    padding-right: 3%;
+    /* position: absolute; */
+    top: 1px;
+}
+
+.tic-tac-toe {
+    /* position: absolute; */
+    height: 9vh;
+    /* padding-top: 5px; */
+    padding-left: 3%;
+    top: 0px;
+}
+
+.title-text {
+    font-size: 2.5rem;
+    text-align: center;
+    text-shadow: 3px 2px rgb(110, 109, 109);
+}
+
+.logo-img {
+    height: 8vh;
+    /* padding-top: 10px; */
 }
 
 
@@ -150,7 +180,6 @@
     display:grid;
     width: 100vw;
     height: 90vh;
-    right: 0%;
 }
 
 .gameboard-container {
@@ -159,6 +188,7 @@
     width: 80vh;
     align-self: center;
     justify-self: center;
+    justify-items: center;
     grid-template-columns: repeat(3, calc(80vh / 3));
     grid-template-rows: repeat(3, calc(80vh / 3));
 }
