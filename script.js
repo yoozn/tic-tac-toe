@@ -125,7 +125,6 @@ const Gameboard = (function() {
                 });
             }
         }
-        console.log({"created": gameboard});
     };
 
 
