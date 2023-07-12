@@ -31,7 +31,7 @@ const Gameboard = (function() {
         gameboardContainer.classList.add("gameboard-container");
         mainContainer.appendChild(gameboardContainer);
         
-        const gameSquare = (x_coord, y_coord) => {
+        const gameSquare = (x_coord, y_coord, sym="none") => {
             let x = x_coord;
             let y = y_coord;
             let symbol = "none";
@@ -40,8 +40,11 @@ const Gameboard = (function() {
 
         for (let i=0; i < 3; i++) {
             for (let j =0; j<3; j++) {
-                let square = gameSquare(j, i);
+                let square = gameSquare(j, i, "none");
                 gameboard.push(square);
+                // newSqr = gameboard.find(sqr => sqr == square);
+                // console.log("New Square");
+                // console.log(newSqr);
                 const newSquare = document.createElement('div');
                 newSquare.classList.add('square');
                 newSquare.dataset.x= square.x;
@@ -72,6 +75,7 @@ const Gameboard = (function() {
                     }
                 });
                 newSquare.addEventListener('click', () => {
+                    let won = false;
                     if (square.symbol == "none" || square.symbol == "hover") {
                         if (pageManager.isPlayerTurn()) {
                             square.symbol = pageManager.user.getSymbol();
@@ -85,19 +89,22 @@ const Gameboard = (function() {
                         pageManager.switchTurn();
                     }
                     if (pageManager.getPieceCount() > 3) {
-                        console.log(square);
-                        checkWin(square);
+                        // console.log(square);
+                        won = checkWin(square, "user");
+                        console.log({"won" : won});
                     }
 
-                    if (pageManager.getMode() == "1PEasy" && pageManager.getPieceCount() < 9 && !pageManager.isPlayerTurn()) {
+                    if (pageManager.getMode() == "1PEasy" && pageManager.getPieceCount() < 9 && !pageManager.isPlayerTurn() && !won) {
                         const freeSpaces = gameboard.filter( sqr => {
                             return sqr.symbol == "none";
                         });
                         // console.log({"Freespaces": freeSpaces});
+                        console.log("execute");
                         const randomIndex = Math.floor(Math.random() * freeSpaces.length);
                         const randomSquare = freeSpaces[randomIndex];
                         const squareToPlaceIndex = gameboard.indexOf(randomSquare);
                         gameboard[squareToPlaceIndex].symbol = pageManager.computer.getSymbol();
+                        console.log(gameboard);
                         const squareElement = gameboardContainer.childNodes[squareToPlaceIndex];
                         const symbol = document.createElement('img');
                         symbol.classList.add(`${pageManager.user.getSymbol() == "X" ? "o-img" : "x-img"}`);
@@ -105,8 +112,8 @@ const Gameboard = (function() {
                         squareElement.appendChild(symbol);
                         pageManager.piecePlaced();
                         pageManager.switchTurn();
-                        checkWin(gameboard[squareToPlaceIndex]);
-                        console.log(gameboard[squareToPlaceIndex]);
+                        checkWin(gameboard[squareToPlaceIndex], "computer");
+                        // console.log(gameboard[squareToPlaceIndex]);
                     };
                 });
             }
@@ -123,14 +130,15 @@ const Gameboard = (function() {
     const resetBoard = () => {
         gameboard = [];
         console.log("RESET GAMEBOARD");
+        alert(gameboard);
         console.log(gameboard);
         const main = document.querySelector(".main");
-        console.log(main);
+        // console.log(main);
         main.removeChild(main.querySelector(".gameboard-container"));
         createBoard();
     }
 
-    const checkWin = (square) => {
+    const checkWin = (square, player) => {
         console.log("checking");
         let x = square.x;
         let y = square.y;
@@ -156,7 +164,7 @@ const Gameboard = (function() {
                     return (sqr.x == x_coord && sqr.y == y_coord);
                 })[0];
                 if (newSquare.symbol == "X" || newSquare.symbol == "O") {
-                    if (newSquare.symbol == (pageManager.isPlayerTurn() ? pageManager.computer.getSymbol() : pageManager.user.getSymbol())) {
+                    if (newSquare.symbol == (player == "computer" ? pageManager.computer.getSymbol() : pageManager.user.getSymbol())) {
                         if (firstIteration == false) {
                             if (direction == "right" || direction == "left") horzCount++;
                             if (direction == "up" || direction == "down") vertCount++;
@@ -178,10 +186,12 @@ const Gameboard = (function() {
         checkSquares(x, y, "diagRLdown");
         checkSquares(x, y, "diagRLup");
 
-        console.log({horzCount, vertCount, diagLRCount, diagRLCount});
+        // console.log({horzCount, vertCount, diagLRCount, diagRLCount});
         if (vertCount >= 3 || horzCount >= 3 || diagLRCount >= 3 || diagRLCount >= 3) {
             pageManager.isPlayerTurn() ? pageManager.win(pageManager.computer) : pageManager.win(pageManager.user);
+            return true;
         }
+        return false;
     }
     return {gameboard, createBoard, resetBoard};
 })();
@@ -243,12 +253,18 @@ const pageManager = (function() {
 
     const piecePlaced = () => {
         pieceCount++;
+        if (pieceCount == 9) {
+            alert("tie");
+            pieceCount = 0;
+            playerTurn = true;
+            Gameboard.resetBoard();
+        }
     }
 
     const getPieceCount = () => pieceCount;
 
     const win = (player) => {
-        console.log("triggered");
+        // console.log("triggered");
         player.win();
         alert(`${player.getName()} wins! Score: ${player.getWins()}`);
         pieceCount = 0;
