@@ -134,6 +134,9 @@ const Gameboard = (function() {
                                 } else if (moves.quaternaryMoves.length > 0) {
                                     let randomMove = Math.floor(moves.quaternaryMoves.length * Math.random());
                                     move = moves.quaternaryMoves[randomMove];
+                                } else if (moves.quinaryMoves.length > 0) {
+                                    let randomMove = Math.floor(moves.quinaryMoves.length * Math.random());
+                                    move = moves.quinaryMoves[randomMove];
                                 }
 
                                 gameboard[move].symbol = pageManager.computer.getSymbol();
@@ -179,6 +182,7 @@ const Gameboard = (function() {
         let secondaryMoves = [];
         let tertiaryMoves = [];
         let quaternaryMoves = [];
+        let quinaryMoves = [];
         if (sym == "X" ? sym2 = "O" : sym2 = "X");
         for (let i = 0; i < 3; i++) {
             rowCount = 0;
@@ -189,7 +193,7 @@ const Gameboard = (function() {
                     else if (sqr.symbol == sym2) rowCount--
                     else {
                         criticalRowSquare = (i * 3) + sqr.x;
-                        if (!quaternaryMoves.includes(criticalRowSquare)) quaternaryMoves.push(criticalRowSquare);
+                        if (!quaternaryMoves.includes(criticalRowSquare)) quinaryMoves.push(criticalRowSquare);
                     }
                 }
                 if (sqr.x == i) {
@@ -197,7 +201,7 @@ const Gameboard = (function() {
                     else if (sqr.symbol == sym2) columnCount--;
                     else {
                         criticalColumnSquare = (sqr.y * 3) + i;
-                        if (!quaternaryMoves.includes(criticalColumnSquare)) quaternaryMoves.push(criticalColumnSquare);
+                        if (!quinaryMoves.includes(criticalColumnSquare)) quinaryMoves.push(criticalColumnSquare);
                     }
                 }
             })
@@ -205,14 +209,14 @@ const Gameboard = (function() {
             else if (gameboard[i*4].symbol == sym2) diagLRcount--;
             else {
                 criticalDiagLRSquare = i*4;
-                if (!quaternaryMoves.includes(criticalDiagLRSquare)) quaternaryMoves.push(criticalDiagLRSquare);
+                if (!quinaryMoves.includes(criticalDiagLRSquare)) quinaryMoves.push(criticalDiagLRSquare);
             }
 
             if (gameboard[2*(i+1)].symbol == sym) diagRLcount++;
             else if (gameboard[2*(i+1)].symbol == sym2) diagRLcount--;
             else {
                 criticalDiagRLSquare = 2 * (i+1);
-                if (!quaternaryMoves.includes(criticalDiagRLSquare)) quaternaryMoves.push(criticalDiagRLSquare);
+                if (!quinaryMoves.includes(criticalDiagRLSquare)) quinaryMoves.push(criticalDiagRLSquare);
             }
 
             if (rowCount == 2) {
@@ -234,14 +238,20 @@ const Gameboard = (function() {
             tertiaryMoves.push(4);
         }
 
+        if (gameboard[0].symbol == "none") quaternaryMoves.push(0);
+        if (gameboard[2].symbol == "none") quaternaryMoves.push(2);
+        if (gameboard[6].symbol == "none") quaternaryMoves.push(6);
+        if (gameboard[8].symbol == "none") quaternaryMoves.push(8);
+
         if (firstIteration){
             secondaryMoves = evaluatePosition(sym = sym2, false).primaryMoves;
             console.log("primary moves", primaryMoves);
             console.log("secondary moves", secondaryMoves);
             console.log("tertiary moves", tertiaryMoves);
             console.log("quaternary moves", quaternaryMoves);
+            console.log("quaternary moves", quinaryMoves);
         }
-        return {primaryMoves, secondaryMoves, tertiaryMoves, quaternaryMoves};
+        return {primaryMoves, secondaryMoves, tertiaryMoves, quaternaryMoves, quinaryMoves};
     }
 
     const checkWin = (square, player) => {
@@ -316,6 +326,8 @@ const pageManager = (function() {
         const onePlayerContainer = document.querySelector(".one-p-container")
         const onePlayerEasy = document.querySelector(".easy-container");
         const onePlayerHard = document.querySelector(".hard-container");
+        const continueButton = document.querySelector(".continue-button");
+        const header = document.querySelector(".header");
 
         twoPlayerSelect.addEventListener('click', () => {
             mode = "2P";
@@ -323,6 +335,8 @@ const pageManager = (function() {
             onePlayerContainer.style.backgroundColor = "rgb(255, 209, 111)";
             onePlayerEasy.style.backgroundColor = "rgb(255, 209, 111)";
             onePlayerHard.style.backgroundColor = "rgb(255, 209, 111)";
+            const currentMode = document.querySelector(".mode");
+            currentMode.textContent = "test";
             Gameboard.resetBoard();
         });
 
@@ -332,6 +346,8 @@ const pageManager = (function() {
             onePlayerContainer.style.backgroundColor = "rgb(255, 178, 78)";
             onePlayerEasy.style.backgroundColor = "rgb(255, 178, 78)";
             onePlayerHard.style.backgroundColor = "rgb(255, 209, 111)";
+            const currentMode = document.querySelector(".mode");
+            currentMode.textContent = mode;
             Gameboard.resetBoard();
         });
 
@@ -341,8 +357,25 @@ const pageManager = (function() {
             onePlayerContainer.style.backgroundColor = "rgb(255, 178, 78)";
             onePlayerEasy.style.backgroundColor = "rgb(255, 209, 111)";
             onePlayerHard.style.backgroundColor = "rgb(255, 178, 78)";
+            const currentMode = document.querySelector(".mode");
+            currentMode.textContent = mode;
             Gameboard.resetBoard();
         });
+
+        continueButton.addEventListener('click', () => {
+            const header = document.querySelector(".header");
+            header.classList.remove("header-show");
+            Gameboard.resetBoard();
+        })
+
+        header.addEventListener('mouseover', () => {
+            continueButton.style.visibility = "hidden";
+            header.style.bottom = "20vh";
+        })
+
+        header.addEventListener('mouseleave', () => {
+            header.style.bottom = "92vh";
+        })
     }
 
     const switchTurn = () => {
@@ -365,10 +398,9 @@ const pageManager = (function() {
 
     const checkTie = () => {
         if (pieceCount == 9) {
-            alert("tie");
-            // pieceCount = 0;
-            // playerTurn = true;
-            Gameboard.resetBoard();
+            const winText = document.querySelector(".header-text");
+            winText.textContent = "Tie.";
+            showHeader();
             return true;
         }
     }
@@ -385,10 +417,27 @@ const pageManager = (function() {
 
     const win = (player) => {
         player.win();
-        alert(`${player.getName()} wins! Score: ${player.getWins()}`);
-        // pieceCount = 0;
-        // playerTurn = true;
-        Gameboard.resetBoard();
+        const winText = document.querySelector(".header-text");
+        winText.textContent = `${player.getName()} won!`;
+        showHeader();
+    }
+
+    const showHeader = () => {
+        const header = document.querySelector(".header");
+        const leftScore = document.querySelector(".score-left");
+        const leftName = document.querySelector(".player-1");
+        const rightScore = document.querySelector(".score-right");
+        const rightName = document.querySelector(".player-2");
+        const continueButton = document.querySelector(".continue-button");
+        const currentMode = document.querySelector(".mode");
+
+        leftName.textContent = user.getName();
+        leftScore.textContent = user.getWins();
+        rightName.textContent = computer.getName();
+        rightScore.textContent = computer.getWins();
+        currentMode.textContent = mode;
+        continueButton.style.visibility = "visible";
+        header.classList.add("header-show");
     }
 
     return {user, computer, initialize, switchTurn, isPlayerTurn, switchMode, getMode, piecePlaced, getPieceCount, win, checkTie, resetPieceCount, resetPlayerTurn};
