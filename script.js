@@ -90,7 +90,11 @@ const Gameboard = (function() {
                     }
                     if (pageManager.getPieceCount() > 3) {
                         // console.log(square);
-                        won = checkWin(square, "user");
+                        if (!pageManager.isPlayerTurn()) {
+                            won = checkWin(square, "user");
+                        } else if (pageManager.getMode() == "2P") {
+                            checkWin(square, "computer");
+                        }
                         console.log({"won" : won});
                     }
                     //piece count gets set to 0 after a tie, so an array entry is added after the game is reset w.o. the middle conditional (6hrs to find...)
