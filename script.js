@@ -157,6 +157,8 @@ const Gameboard = (function() {
 
     const resetBoard = () => {
         gameboard = [];
+        pageManager.resetPieceCount();
+        pageManager.resetPlayerTurn();
         const main = document.querySelector(".main");
         main.removeChild(main.querySelector(".gameboard-container"));
         createBoard();
@@ -318,6 +320,7 @@ const pageManager = (function() {
             onePlayerContainer.style.backgroundColor = "rgb(255, 209, 111)";
             onePlayerEasy.style.backgroundColor = "rgb(255, 209, 111)";
             onePlayerHard.style.backgroundColor = "rgb(255, 209, 111)";
+            Gameboard.resetBoard();
         });
 
         onePlayerEasy.addEventListener('click', () => {
@@ -326,6 +329,7 @@ const pageManager = (function() {
             onePlayerContainer.style.backgroundColor = "rgb(255, 178, 78)";
             onePlayerEasy.style.backgroundColor = "rgb(255, 178, 78)";
             onePlayerHard.style.backgroundColor = "rgb(255, 209, 111)";
+            Gameboard.resetBoard();
         });
 
         onePlayerHard.addEventListener('click', () => {
@@ -334,6 +338,7 @@ const pageManager = (function() {
             onePlayerContainer.style.backgroundColor = "rgb(255, 178, 78)";
             onePlayerEasy.style.backgroundColor = "rgb(255, 209, 111)";
             onePlayerHard.style.backgroundColor = "rgb(255, 178, 78)";
+            Gameboard.resetBoard();
         });
     }
 
@@ -358,8 +363,8 @@ const pageManager = (function() {
     const checkTie = () => {
         if (pieceCount == 9) {
             alert("tie");
-            pieceCount = 0;
-            playerTurn = true;
+            // pieceCount = 0;
+            // playerTurn = true;
             Gameboard.resetBoard();
             return true;
         }
@@ -367,15 +372,23 @@ const pageManager = (function() {
 
     const getPieceCount = () => pieceCount;
 
+    const resetPieceCount = () => {
+        pieceCount = 0;
+    }
+
+    const resetPlayerTurn = () => {
+        playerTurn = true;
+    }
+
     const win = (player) => {
         player.win();
         alert(`${player.getName()} wins! Score: ${player.getWins()}`);
-        pieceCount = 0;
-        playerTurn = true;
+        // pieceCount = 0;
+        // playerTurn = true;
         Gameboard.resetBoard();
     }
 
-    return {user, computer, initialize, switchTurn, isPlayerTurn, switchMode, getMode, piecePlaced, getPieceCount, win, checkTie};
+    return {user, computer, initialize, switchTurn, isPlayerTurn, switchMode, getMode, piecePlaced, getPieceCount, win, checkTie, resetPieceCount, resetPlayerTurn};
 })();
 
 pageManager.initialize();
