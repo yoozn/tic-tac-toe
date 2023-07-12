@@ -92,22 +92,23 @@ const Gameboard = (function() {
                             checkWin(square, "computer");
                             pageManager.checkTie();
                         }
-                        console.log({"won" : won});
+                        // console.log({"won" : won});
                     }
                     //if switch turn without checking if won, can screw up hover on computer mode
                     if (!won && !tie) {
                         pageManager.switchTurn();
+                        evaluatePosition();
                         //piece count gets set to 0 after a tie, so an array entry is added after the game is reset w.o. the middle conditional (6hrs to find...)
                         if (pageManager.getMode() == "1PEasy" && pageManager.getPieceCount() > 0 && !pageManager.isPlayerTurn()) {
                             const freeSpaces = gameboard.filter( sqr => {
                                 return sqr.symbol == "none";
                             });
-                            console.log("execute", pageManager.getPieceCount());
+                            // console.log("execute", pageManager.getPieceCount());
                             const randomIndex = Math.floor(Math.random() * freeSpaces.length);
                             const randomSquare = freeSpaces[randomIndex];
                             const squareToPlaceIndex = gameboard.indexOf(randomSquare);
                             gameboard[squareToPlaceIndex].symbol = pageManager.computer.getSymbol();
-                            console.log(gameboard);
+                            // console.log(gameboard);
                             const squareElement = gameboardContainer.childNodes[squareToPlaceIndex];
                             const symbol = document.createElement('img');
                             symbol.classList.add(`${pageManager.user.getSymbol() == "X" ? "o-img" : "x-img"}`);
@@ -130,14 +131,55 @@ const Gameboard = (function() {
 
     const resetBoard = () => {
         gameboard = [];
-        console.log(gameboard);
+        // console.log(gameboard);
         const main = document.querySelector(".main");
         main.removeChild(main.querySelector(".gameboard-container"));
         createBoard();
     }
 
+    const evaluatePosition = (sym = "X", firstIteration = true) => {
+        let sym2;
+        let diagLRcount = 0;
+        let diagRLcount = 0;
+        if (sym == "X" ? sym2 = "O" : sym2 = "X");
+        for (let i = 0; i < 3; i++) {
+            rowCount = 0;
+            columnCount = 0;
+            gameboard.forEach(sqr => {
+                if(sqr.y == i) {
+                    if (sqr.symbol == sym) rowCount++;
+                    else if (sqr.symbol == sym2) rowCount--
+                }
+                if (sqr.x == i) {
+                    if (sqr.symbol == sym) columnCount++;
+                    else if (sqr.symbol == sym2) columnCount--;
+                }
+            })
+            if (gameboard[i*4].symbol == sym) diagLRcount++;
+            else if (gameboard[i*4].symbol == sym2) diagLRcount--;
+
+            if (gameboard[2*(i+1)].symbol == sym) diagRLcount++;
+            else if (gameboard[2+(i*1)].symbol == sym2) diagRLcount--;
+
+            if (rowCount == 2) {
+                console.log(`Critical Row: ${i}`);
+            } 
+            if (columnCount == 2) {
+                console.log(`Critical Column: ${i}`);
+            }
+        }
+        if (diagLRcount == 2) {
+            console.log(`CriticalDiagonalLR`);
+        }
+        if (diagRLcount == 2) {
+            console.log(`CriticalDiaganalRL`);
+        }
+
+        if (firstIteration) evaluatePosition(sym = "O", false);
+    }
+
     const checkWin = (square, player) => {
-        console.log({"checkwinarea":gameboard});
+        // console.log({"checkwinarea":gameboard});
         let x = square.x;
         let y = square.y;
         let vertCount = 1;
