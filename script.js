@@ -97,29 +97,55 @@ const Gameboard = (function() {
                     //if switch turn without checking if won, can screw up hover on computer mode
                     if (!won && !tie) {
                         pageManager.switchTurn();
-                        evaluatePosition();
+                        // evaluatePosition();
                         //piece count gets set to 0 after a tie, so an array entry is added after the game is reset w.o. the middle conditional (6hrs to find...)
-                        if (pageManager.getMode() == "1PEasy" && pageManager.getPieceCount() > 0 && !pageManager.isPlayerTurn()) {
-                            const freeSpaces = gameboard.filter( sqr => {
-                                return sqr.symbol == "none";
-                            });
-                            // console.log("execute", pageManager.getPieceCount());
-                            const randomIndex = Math.floor(Math.random() * freeSpaces.length);
-                            const randomSquare = freeSpaces[randomIndex];
-                            const squareToPlaceIndex = gameboard.indexOf(randomSquare);
-                            gameboard[squareToPlaceIndex].symbol = pageManager.computer.getSymbol();
-                            // console.log(gameboard);
-                            const squareElement = gameboardContainer.childNodes[squareToPlaceIndex];
-                            const symbol = document.createElement('img');
-                            symbol.classList.add(`${pageManager.user.getSymbol() == "X" ? "o-img" : "x-img"}`);
-                            symbol.src = `${pageManager.user.getSymbol() == "X" ? "images/o.png" : "images/x-png"}`;
-                            squareElement.appendChild(symbol);
-                            pageManager.piecePlaced();
-                            if (pageManager.getPieceCount() > 4) {
-                                won = checkWin(gameboard[squareToPlaceIndex], "computer");
-                                tie = pageManager.checkTie();
+                        if ( pageManager.getPieceCount() > 0 && !pageManager.isPlayerTurn()) {
+                            if (pageManager.getMode() == "1PEasy") {
+                                const freeSpaces = gameboard.filter( sqr => {
+                                    return sqr.symbol == "none";
+                                });
+                                const randomIndex = Math.floor(Math.random() * freeSpaces.length);
+                                const randomSquare = freeSpaces[randomIndex];
+                                const squareToPlaceIndex = gameboard.indexOf(randomSquare);
+                                gameboard[squareToPlaceIndex].symbol = pageManager.computer.getSymbol();
+                                const squareElement = gameboardContainer.childNodes[squareToPlaceIndex];
+                                const symbol = document.createElement('img');
+                                symbol.classList.add(`${pageManager.user.getSymbol() == "X" ? "o-img" : "x-img"}`);
+                                symbol.src = `${pageManager.user.getSymbol() == "X" ? "images/o.png" : "images/x-png"}`;
+                                squareElement.appendChild(symbol);
+                                pageManager.piecePlaced();
+                                if (pageManager.getPieceCount() > 4) {
+                                    won = checkWin(gameboard[squareToPlaceIndex], "computer");
+                                    tie = pageManager.checkTie();
+                                }
+                                if (!won && !tie) pageManager.switchTurn();
                             }
-                            if (!won && !tie) pageManager.switchTurn();
+                            else if (pageManager.getMode() == "1PHard") {
+                                const moves = evaluatePosition("O");
+                                let move;
+                                if (moves.primaryMoves.length > 0 ) {
+                                    move = moves.primaryMoves[0];
+                                } else if (moves.secondaryMoves.length > 0) {
+                                    move = moves.secondaryMoves[0];
+                                } else if (moves.tertiaryMoves.length > 0) {
+                                    move = moves.tertiaryMoves[0];
+                                } else if (moves.quaternaryMoves.length > 0) {
+                                    move = moves.quaternaryMoves[0];
+                                }
+
+                                gameboard[move].symbol = pageManager.computer.getSymbol();
+                                const squareElement = gameboardContainer.childNodes[move];
+                                const symbol = document.createElement('img');
+                                symbol.classList.add(`${pageManager.user.getSymbol() == "X" ? "o-img" : "x-img"}`);
+                                symbol.src = `${pageManager.user.getSymbol() == "X" ? "images/o.png" : "images/x-png"}`;
+                                squareElement.appendChild(symbol);
+                                pageManager.piecePlaced();
+                                if (pageManager.getPieceCount() > 4) {
+                                    won = checkWin(gameboard[move], "computer");
+                                    tie = pageManager.checkTie();
+                                }
+                                if (!won && !tie) pageManager.switchTurn();
+                            }
                         }
                     };
                 }
@@ -131,7 +157,6 @@ const Gameboard = (function() {
 
     const resetBoard = () => {
         gameboard = [];
-        // console.log(gameboard);
         const main = document.querySelector(".main");
         main.removeChild(main.querySelector(".gameboard-container"));
         createBoard();
@@ -147,6 +172,8 @@ const Gameboard = (function() {
         let criticalDiagRLSquare;
         let primaryMoves = [];
         let secondaryMoves = [];
+        let tertiaryMoves = [];
+        let quaternaryMoves = [];
         if (sym == "X" ? sym2 = "O" : sym2 = "X");
         for (let i = 0; i < 3; i++) {
             rowCount = 0;
@@ -156,18 +183,16 @@ const Gameboard = (function() {
                     if (sqr.symbol == sym) rowCount++;
                     else if (sqr.symbol == sym2) rowCount--
                     else {
-                        // criticalRowSquare = sqr.x;
                         criticalRowSquare = (i * 3) + sqr.x;
-                        // bestMoveIndex = (i * 3) + sqr.x;
+                        if (!quaternaryMoves.includes(criticalRowSquare)) quaternaryMoves.push(criticalRowSquare);
                     }
                 }
                 if (sqr.x == i) {
                     if (sqr.symbol == sym) columnCount++;
                     else if (sqr.symbol == sym2) columnCount--;
                     else {
-                        // criticalColumnSquare = sqr.y;
-                        // bestMoveIndex = (sqr.y * 3) + i;
                         criticalColumnSquare = (sqr.y * 3) + i;
+                        if (!quaternaryMoves.includes(criticalColumnSquare)) quaternaryMoves.push(criticalColumnSquare);
                     }
                 }
             })
@@ -175,48 +200,43 @@ const Gameboard = (function() {
             else if (gameboard[i*4].symbol == sym2) diagLRcount--;
             else {
                 criticalDiagLRSquare = i*4;
-                // bestMoveIndex = i*4;
+                if (!quaternaryMoves.includes(criticalDiagLRSquare)) quaternaryMoves.push(criticalDiagLRSquare);
             }
 
             if (gameboard[2*(i+1)].symbol == sym) diagRLcount++;
             else if (gameboard[2*(i+1)].symbol == sym2) diagRLcount--;
             else {
                 criticalDiagRLSquare = 2 * (i+1);
-                // bestMoveIndex = 2 + (i+1);
+                if (!quaternaryMoves.includes(criticalDiagRLSquare)) quaternaryMoves.push(criticalDiagRLSquare);
             }
 
             if (rowCount == 2) {
-                // console.log(`Critical Row: ${i}, square: ${criticalRowSquare}`);
                 primaryMoves.push(criticalRowSquare);
             } 
             if (columnCount == 2) {
-                // console.log(`Critical Column: ${i}, square: ${criticalColumnSquare}`);
                 primaryMoves.push(criticalColumnSquare);
             }
 
-            // if (rowCount == 2 || columnCount == 2) {
-            //     console.log(bestMoveIndex);
-            // }
-
         }
         if (diagLRcount == 2) {
-            // console.log(`CriticalDiagonalLR, square ${criticalDiagLRSquare}`);
             primaryMoves.push(criticalDiagLRSquare);
         }
         if (diagRLcount == 2) {
-            // console.log(`CriticalDiagonalRL, square ${criticalDiagRLSquare}`);
             primaryMoves.push(criticalDiagRLSquare);
         }
-        // if (diagLRcount == 2 || diagRLcount == 2) {
-        //     console.log(bestMoveIndex);
-        // }
+
+        if (gameboard[4].symbol == "none") {
+            tertiaryMoves.push(4);
+        }
 
         if (firstIteration){
-            secondaryMoves = evaluatePosition(sym = "O", false).primaryMoves;
+            secondaryMoves = evaluatePosition(sym = sym2, false).primaryMoves;
             console.log("primary moves", primaryMoves);
             console.log("secondary moves", secondaryMoves);
+            console.log("tertiary moves", tertiaryMoves);
+            console.log("quaternary moves", quaternaryMoves);
         }
-        return {primaryMoves, secondaryMoves};
+        return {primaryMoves, secondaryMoves, tertiaryMoves, quaternaryMoves};
     }
 
     const checkWin = (square, player) => {
@@ -274,7 +294,7 @@ const Gameboard = (function() {
         }
         return false;
     }
-    return {gameboard, createBoard, resetBoard};
+    return {gameboard, createBoard, resetBoard, evaluatePosition};
 })();
 
 const pageManager = (function() {
