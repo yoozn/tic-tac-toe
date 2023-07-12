@@ -21,9 +21,18 @@
 }
 
 .header {
-    height: 8vh;
+    position: absolute;
+    height: 100vh;
+    width: 100vw;
+    bottom: 92vh;
     background-color: var(--header-colour);
     box-shadow: 0px 0px 7px 2px black;
+    transition: 1s;
+}
+
+.header:hover {
+    bottom: 30%;
+    background-color: rgba(255, 233, 134, 0.35);
 }
 
 .sidebar {
@@ -75,7 +84,12 @@
 
 
 .main {
+    position: absolute;
+    top:10vh;
     display:grid;
+    width: 100vw;
+    height: 90vh;
+    right: 0%;
 }
 
 .gameboard-container {

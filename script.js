@@ -112,6 +112,7 @@ const Gameboard = (function() {
                                 const squareElement = gameboardContainer.childNodes[squareToPlaceIndex];
                                 const symbol = document.createElement('img');
                                 symbol.classList.add(`${pageManager.user.getSymbol() == "X" ? "o-img" : "x-img"}`);
+                                // symbol.classList.add("hover");
                                 symbol.src = `${pageManager.user.getSymbol() == "X" ? "images/o.png" : "images/x-png"}`;
                                 squareElement.appendChild(symbol);
                                 pageManager.piecePlaced();
