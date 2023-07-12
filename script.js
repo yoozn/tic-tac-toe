@@ -336,7 +336,7 @@ const pageManager = (function() {
             onePlayerEasy.style.backgroundColor = "rgb(255, 209, 111)";
             onePlayerHard.style.backgroundColor = "rgb(255, 209, 111)";
             const currentMode = document.querySelector(".mode");
-            currentMode.textContent = "test";
+            currentMode.textContent = mode;
             Gameboard.resetBoard();
         });
 
