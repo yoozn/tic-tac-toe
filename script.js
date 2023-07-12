@@ -145,6 +145,8 @@ const Gameboard = (function() {
         let criticalColumnSquare;
         let criticalDiagLRSquare;
         let criticalDiagRLSquare;
+        let primaryMoves = [];
+        let secondaryMoves = [];
         if (sym == "X" ? sym2 = "O" : sym2 = "X");
         for (let i = 0; i < 3; i++) {
             rowCount = 0;
@@ -153,37 +155,68 @@ const Gameboard = (function() {
                 if(sqr.y == i) {
                     if (sqr.symbol == sym) rowCount++;
                     else if (sqr.symbol == sym2) rowCount--
-                    else criticalRowSquare = sqr.x;
+                    else {
+                        // criticalRowSquare = sqr.x;
+                        criticalRowSquare = (i * 3) + sqr.x;
+                        // bestMoveIndex = (i * 3) + sqr.x;
+                    }
                 }
                 if (sqr.x == i) {
                     if (sqr.symbol == sym) columnCount++;
                     else if (sqr.symbol == sym2) columnCount--;
-                    else criticalColumnSquare = sqr.y;
+                    else {
+                        // criticalColumnSquare = sqr.y;
+                        // bestMoveIndex = (sqr.y * 3) + i;
+                        criticalColumnSquare = (sqr.y * 3) + i;
+                    }
                 }
             })
             if (gameboard[i*4].symbol == sym) diagLRcount++;
             else if (gameboard[i*4].symbol == sym2) diagLRcount--;
-            else criticalDiagLRSquare = i*4;
+            else {
+                criticalDiagLRSquare = i*4;
+                // bestMoveIndex = i*4;
+            }
 
             if (gameboard[2*(i+1)].symbol == sym) diagRLcount++;
-            else if (gameboard[2+(i+1)].symbol == sym2) diagRLcount--;
-            else criticalDiagRLSquare = 2 + (i+1);
+            else if (gameboard[2*(i+1)].symbol == sym2) diagRLcount--;
+            else {
+                criticalDiagRLSquare = 2 * (i+1);
+                // bestMoveIndex = 2 + (i+1);
+            }
 
             if (rowCount == 2) {
-                console.log(`Critical Row: ${i}, square: ${criticalRowSquare}`);
+                // console.log(`Critical Row: ${i}, square: ${criticalRowSquare}`);
+                primaryMoves.push(criticalRowSquare);
             } 
             if (columnCount == 2) {
-                console.log(`Critical Column: ${i}, square: ${criticalColumnSquare}`);
+                // console.log(`Critical Column: ${i}, square: ${criticalColumnSquare}`);
+                primaryMoves.push(criticalColumnSquare);
             }
+
+            // if (rowCount == 2 || columnCount == 2) {
+            //     console.log(bestMoveIndex);
+            // }
+
         }
         if (diagLRcount == 2) {
-            console.log(`CriticalDiagonalLR, square ${criticalDiagLRSquare}`);
+            // console.log(`CriticalDiagonalLR, square ${criticalDiagLRSquare}`);
+            primaryMoves.push(criticalDiagLRSquare);
         }
         if (diagRLcount == 2) {
-            console.log(`CriticalDiagonalRL, square ${criticalDiagRLSquare}`);
+            // console.log(`CriticalDiagonalRL, square ${criticalDiagRLSquare}`);
+            primaryMoves.push(criticalDiagRLSquare);
         }
+        // if (diagLRcount == 2 || diagRLcount == 2) {
+        //     console.log(bestMoveIndex);
+        // }
 
-        if (firstIteration) evaluatePosition(sym = "O", false);
+        if (firstIteration){
+            secondaryMoves = evaluatePosition(sym = "O", false).primaryMoves;
+            console.log("primary moves", primaryMoves);
+            console.log("secondary moves", secondaryMoves);
+        }
+        return {primaryMoves, secondaryMoves};
     }
 
     const checkWin = (square, player) => {
