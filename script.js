@@ -73,6 +73,7 @@ const Gameboard = (function() {
                 });
                 newSquare.addEventListener('click', () => {
                     let won = false;
+                    let tie = false;
                     if (square.symbol == "none" || square.symbol == "hover") {
                         if (pageManager.isPlayerTurn()) {
                             square.symbol = pageManager.user.getSymbol();
@@ -86,7 +87,7 @@ const Gameboard = (function() {
                         if (pageManager.getPieceCount() > 4) {
                             if (pageManager.isPlayerTurn()) {
                                 won = checkWin(square, "user");
-                                pageManager.checkTie();
+                                tie = (pageManager.checkTie());
                         } else if (pageManager.getMode() == "2P") {
                             checkWin(square, "computer");
                             pageManager.checkTie();
@@ -94,7 +95,7 @@ const Gameboard = (function() {
                         console.log({"won" : won});
                     }
                     //if switch turn without checking if won, can screw up hover on computer mode
-                    if (!won) {
+                    if (!won && !tie) {
                         pageManager.switchTurn();
                         //piece count gets set to 0 after a tie, so an array entry is added after the game is reset w.o. the middle conditional (6hrs to find...)
                         if (pageManager.getMode() == "1PEasy" && pageManager.getPieceCount() > 0 && !pageManager.isPlayerTurn()) {
@@ -114,10 +115,10 @@ const Gameboard = (function() {
                             squareElement.appendChild(symbol);
                             pageManager.piecePlaced();
                             if (pageManager.getPieceCount() > 4) {
-                                checkWin(gameboard[squareToPlaceIndex], "computer");
-                                pageManager.checkTie();
+                                won = checkWin(gameboard[squareToPlaceIndex], "computer");
+                                tie = pageManager.checkTie();
                             }
-                            pageManager.switchTurn();
+                            if (!won && !tie) pageManager.switchTurn();
                         }
                     };
                 }
@@ -137,6 +138,7 @@ const Gameboard = (function() {
     }
 
     const checkWin = (square, player) => {
+        console.log({"checkwinarea":gameboard});
         let x = square.x;
         let y = square.y;
         let vertCount = 1;
@@ -257,6 +259,7 @@ const pageManager = (function() {
             pieceCount = 0;
             playerTurn = true;
             Gameboard.resetBoard();
+            return true;
         }
     }
 
