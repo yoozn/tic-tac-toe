@@ -318,6 +318,7 @@ const pageManager = (function() {
     let playerTurn = true;
     let mode = "2P"
     let pieceCount = 0;
+    let showingHeader = false;
 
     const initialize = () => {
         Gameboard.createBoard();
@@ -366,15 +367,20 @@ const pageManager = (function() {
             const header = document.querySelector(".header");
             header.classList.remove("header-show");
             Gameboard.resetBoard();
+            header.addEventListener("transitionend", () => {
+                showingHeader = false;
+            }, {once: true});
         })
 
         header.addEventListener('mouseover', () => {
-            continueButton.style.visibility = "hidden";
-            header.style.bottom = "20vh";
+            if (!showingHeader){
+                continueButton.style.visibility = "hidden";
+                header.classList.add("header-hover")
+            }
         })
 
         header.addEventListener('mouseleave', () => {
-            header.style.bottom = "92vh";
+            header.classList.remove("header-hover");
         })
     }
 
@@ -423,6 +429,7 @@ const pageManager = (function() {
     }
 
     const showHeader = () => {
+        showingHeader = true;
         const header = document.querySelector(".header");
         const leftScore = document.querySelector(".score-left");
         const leftName = document.querySelector(".player-1");

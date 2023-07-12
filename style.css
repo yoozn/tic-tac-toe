@@ -39,6 +39,9 @@
     bottom: 1vh;
 }
 
+.header-hover {
+    bottom: 20vh;
+}
 /* .header:hover {
     bottom: 20vh;
 } */
