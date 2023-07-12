@@ -112,7 +112,9 @@ const Gameboard = (function() {
                         squareElement.appendChild(symbol);
                         pageManager.piecePlaced();
                         pageManager.switchTurn();
-                        checkWin(gameboard[squareToPlaceIndex], "computer");
+                        if (pageManager.getPieceCount() > 4) {
+                            checkWin(gameboard[squareToPlaceIndex], "computer");
+                        }
                         // console.log(gameboard[squareToPlaceIndex]);
                     };
                 });
@@ -186,7 +188,7 @@ const Gameboard = (function() {
         checkSquares(x, y, "diagRLdown");
         checkSquares(x, y, "diagRLup");
 
-        // console.log({horzCount, vertCount, diagLRCount, diagRLCount});
+        console.log({horzCount, vertCount, diagLRCount, diagRLCount});
         if (vertCount >= 3 || horzCount >= 3 || diagLRCount >= 3 || diagRLCount >= 3) {
             pageManager.isPlayerTurn() ? pageManager.win(pageManager.computer) : pageManager.win(pageManager.user);
             return true;
