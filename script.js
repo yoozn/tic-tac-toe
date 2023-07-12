@@ -42,9 +42,6 @@ const Gameboard = (function() {
             for (let j =0; j<3; j++) {
                 let square = gameSquare(j, i, "none");
                 gameboard.push(square);
-                // newSqr = gameboard.find(sqr => sqr == square);
-                // console.log("New Square");
-                // console.log(newSqr);
                 const newSquare = document.createElement('div');
                 newSquare.classList.add('square');
                 newSquare.dataset.x= square.x;
@@ -86,66 +83,60 @@ const Gameboard = (function() {
                             }
                         }
                         pageManager.piecePlaced();
-                        pageManager.switchTurn();
-                    }
-                    if (pageManager.getPieceCount() > 3) {
-                        // console.log(square);
-                        if (!pageManager.isPlayerTurn()) {
-                            won = checkWin(square, "user");
+                        if (pageManager.getPieceCount() > 4) {
+                            if (pageManager.isPlayerTurn()) {
+                                won = checkWin(square, "user");
+                                pageManager.checkTie();
                         } else if (pageManager.getMode() == "2P") {
                             checkWin(square, "computer");
+                            pageManager.checkTie();
                         }
                         console.log({"won" : won});
                     }
-                    //piece count gets set to 0 after a tie, so an array entry is added after the game is reset w.o. the middle conditional (6hrs to find...)
-                    if (pageManager.getMode() == "1PEasy" && pageManager.getPieceCount() > 0 && !pageManager.isPlayerTurn() && !won) {
-                        const freeSpaces = gameboard.filter( sqr => {
-                            return sqr.symbol == "none";
-                        });
-                        // console.log({"Freespaces": freeSpaces});
-                        console.log("execute", pageManager.getPieceCount());
-                        const randomIndex = Math.floor(Math.random() * freeSpaces.length);
-                        const randomSquare = freeSpaces[randomIndex];
-                        const squareToPlaceIndex = gameboard.indexOf(randomSquare);
-                        gameboard[squareToPlaceIndex].symbol = pageManager.computer.getSymbol();
-                        console.log(gameboard);
-                        const squareElement = gameboardContainer.childNodes[squareToPlaceIndex];
-                        const symbol = document.createElement('img');
-                        symbol.classList.add(`${pageManager.user.getSymbol() == "X" ? "o-img" : "x-img"}`);
-                        symbol.src = `${pageManager.user.getSymbol() == "X" ? "images/o.png" : "images/x-png"}`;
-                        squareElement.appendChild(symbol);
-                        pageManager.piecePlaced();
+                    //if switch turn without checking if won, can screw up hover on computer mode
+                    if (!won) {
                         pageManager.switchTurn();
-                        if (pageManager.getPieceCount() > 4) {
-                            checkWin(gameboard[squareToPlaceIndex], "computer");
+                        //piece count gets set to 0 after a tie, so an array entry is added after the game is reset w.o. the middle conditional (6hrs to find...)
+                        if (pageManager.getMode() == "1PEasy" && pageManager.getPieceCount() > 0 && !pageManager.isPlayerTurn()) {
+                            const freeSpaces = gameboard.filter( sqr => {
+                                return sqr.symbol == "none";
+                            });
+                            console.log("execute", pageManager.getPieceCount());
+                            const randomIndex = Math.floor(Math.random() * freeSpaces.length);
+                            const randomSquare = freeSpaces[randomIndex];
+                            const squareToPlaceIndex = gameboard.indexOf(randomSquare);
+                            gameboard[squareToPlaceIndex].symbol = pageManager.computer.getSymbol();
+                            console.log(gameboard);
+                            const squareElement = gameboardContainer.childNodes[squareToPlaceIndex];
+                            const symbol = document.createElement('img');
+                            symbol.classList.add(`${pageManager.user.getSymbol() == "X" ? "o-img" : "x-img"}`);
+                            symbol.src = `${pageManager.user.getSymbol() == "X" ? "images/o.png" : "images/x-png"}`;
+                            squareElement.appendChild(symbol);
+                            pageManager.piecePlaced();
+                            if (pageManager.getPieceCount() > 4) {
+                                checkWin(gameboard[squareToPlaceIndex], "computer");
+                                pageManager.checkTie();
+                            }
+                            pageManager.switchTurn();
                         }
-                        // console.log(gameboard[squareToPlaceIndex]);
                     };
+                }
                 });
             }
         }
         console.log({"created": gameboard});
     };
 
-    // const updateBoard = () => {
-    //     for (square of gameboard) {
-
-    //     }
-    // }
 
     const resetBoard = () => {
         gameboard = [];
-        console.log("RESET GAMEBOARD");
-        // alert(gameboard);
         console.log(gameboard);
         const main = document.querySelector(".main");
-        // console.log(main);
         main.removeChild(main.querySelector(".gameboard-container"));
         createBoard();
     }
 
     const checkWin = (square, player) => {
-        console.log("checking");
         let x = square.x;
         let y = square.y;
         let vertCount = 1;
@@ -194,7 +185,7 @@ const Gameboard = (function() {
 
         console.log({horzCount, vertCount, diagLRCount, diagRLCount});
         if (vertCount >= 3 || horzCount >= 3 || diagLRCount >= 3 || diagRLCount >= 3) {
-            pageManager.isPlayerTurn() ? pageManager.win(pageManager.computer) : pageManager.win(pageManager.user);
+            pageManager.isPlayerTurn() ? pageManager.win(pageManager.user) : pageManager.win(pageManager.computer);
             return true;
         }
         return false;
@@ -211,7 +202,6 @@ const pageManager = (function() {
 
     const initialize = () => {
         Gameboard.createBoard();
-        // Gameboard.updateBoard();
 
         const twoPlayerSelect = document.querySelector(".two-p-container");
         const onePlayerContainer = document.querySelector(".one-p-container")
@@ -259,6 +249,9 @@ const pageManager = (function() {
 
     const piecePlaced = () => {
         pieceCount++;
+    }
+
+    const checkTie = () => {
         if (pieceCount == 9) {
             alert("tie");
             pieceCount = 0;
@@ -270,7 +263,6 @@ const pageManager = (function() {
     const getPieceCount = () => pieceCount;
 
     const win = (player) => {
-        // console.log("triggered");
         player.win();
         alert(`${player.getName()} wins! Score: ${player.getWins()}`);
         pieceCount = 0;
@@ -278,9 +270,7 @@ const pageManager = (function() {
         Gameboard.resetBoard();
     }
 
-    return {user, computer, initialize, switchTurn, isPlayerTurn, switchMode, getMode, piecePlaced, getPieceCount, win};
+    return {user, computer, initialize, switchTurn, isPlayerTurn, switchMode, getMode, piecePlaced, getPieceCount, win, checkTie};
 })();
 
 pageManager.initialize();
-// console.log(pageManager.user);
-// console.log(pageManager.user.getSymbol());
