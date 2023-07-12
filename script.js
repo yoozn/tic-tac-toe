@@ -141,6 +141,10 @@ const Gameboard = (function() {
         let sym2;
         let diagLRcount = 0;
         let diagRLcount = 0;
+        let criticalRowSquare;
+        let criticalColumnSquare;
+        let criticalDiagLRSquare;
+        let criticalDiagRLSquare;
         if (sym == "X" ? sym2 = "O" : sym2 = "X");
         for (let i = 0; i < 3; i++) {
             rowCount = 0;
@@ -149,30 +153,34 @@ const Gameboard = (function() {
                 if(sqr.y == i) {
                     if (sqr.symbol == sym) rowCount++;
                     else if (sqr.symbol == sym2) rowCount--
+                    else criticalRowSquare = sqr.x;
                 }
                 if (sqr.x == i) {
                     if (sqr.symbol == sym) columnCount++;
                     else if (sqr.symbol == sym2) columnCount--;
+                    else criticalColumnSquare = sqr.y;
                 }
             })
             if (gameboard[i*4].symbol == sym) diagLRcount++;
             else if (gameboard[i*4].symbol == sym2) diagLRcount--;
+            else criticalDiagLRSquare = i*4;
 
             if (gameboard[2*(i+1)].symbol == sym) diagRLcount++;
-            else if (gameboard[2+(i*1)].symbol == sym2) diagRLcount--;
+            else if (gameboard[2+(i+1)].symbol == sym2) diagRLcount--;
+            else criticalDiagRLSquare = 2 + (i+1);
 
             if (rowCount == 2) {
-                console.log(`Critical Row: ${i}`);
+                console.log(`Critical Row: ${i}, square: ${criticalRowSquare}`);
             } 
             if (columnCount == 2) {
-                console.log(`Critical Column: ${i}`);
+                console.log(`Critical Column: ${i}, square: ${criticalColumnSquare}`);
             }
         }
         if (diagLRcount == 2) {
-            console.log(`CriticalDiagonalLR`);
+            console.log(`CriticalDiagonalLR, square ${criticalDiagLRSquare}`);
         }
         if (diagRLcount == 2) {
-            console.log(`CriticalDiaganalRL`);
+            console.log(`CriticalDiagonalRL, square ${criticalDiagRLSquare}`);
         }
 
         if (firstIteration) evaluatePosition(sym = "O", false);
