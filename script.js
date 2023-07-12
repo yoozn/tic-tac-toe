@@ -83,6 +83,7 @@ const Gameboard = (function() {
                                 square.symbol = pageManager.computer.getSymbol();
                             }
                         }
+                        newSquare.querySelector(".hover").classList.remove("hover");
                         pageManager.piecePlaced();
                         if (pageManager.getPieceCount() > 4) {
                             if (pageManager.isPlayerTurn()) {
@@ -130,7 +131,8 @@ const Gameboard = (function() {
                                 } else if (moves.tertiaryMoves.length > 0) {
                                     move = moves.tertiaryMoves[0];
                                 } else if (moves.quaternaryMoves.length > 0) {
-                                    move = moves.quaternaryMoves[0];
+                                    let randomMove = Math.floor(moves.quaternaryMoves.length * Math.random());
+                                    move = moves.quaternaryMoves[randomMove];
                                 }
 
                                 gameboard[move].symbol = pageManager.computer.getSymbol();
