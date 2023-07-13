@@ -163,22 +163,39 @@ body {
 }
 
 .two-p-container {
+    background-color: var(--sidebar-colour)
+}
+
+.container-selected {
+    background-color: rgb(255, 157, 29);
+}
+
+.side-selected {
     background-color: rgb(255, 178, 78);
 }
 
 .one-p-container {
     display:flex;
     flex-direction: column;
+    background-color: var(--sidebar-colour)
+}
+
+.one-p-inner-container {
+    display:flex;
 }
 
 .easy-container,
 .hard-container {
-    height: 50%;
+    height: 100px;
+    flex: 1;
+    display:flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .easy-text,
 .hard-text {
-    padding-left: 25px;
+    /* padding-left: 25px; */
     font-size: 1.4rem;
 }
 
@@ -210,8 +227,11 @@ body {
     align-self: center;
     justify-self: center;
     justify-items: center;
+    align-items: center;
     grid-template-columns: repeat(3, calc(80vh / 3));
     grid-template-rows: repeat(3, calc(80vh / 3));
+    background-color: rgba(0, 0, 0, 0.164);
+    border-radius: 20px;
 }
 
 .square {
@@ -220,15 +240,16 @@ body {
     width: 90%;
     justify-content: center;
     align-items: center;
-    background-color: rgb(218, 218, 146);
+    background-color: rgba(114, 114, 46, 0.267);
     border-radius: 30px;
-    border: 8px solid rgb(197, 197, 132);
+    border: 8px solid rgb(209, 188, 96);
     transition: .5s;
 }
 
 .square:hover {
     transform:scale(1.1);
-    border-color: rgb(75, 75, 75);
+    border-color: rgb(218, 141, 27);
+    background-color: rgba(0,0,0,0);
 }
 
 img.hover {

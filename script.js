@@ -323,19 +323,25 @@ const pageManager = (function() {
     const initialize = () => {
         Gameboard.createBoard();
 
-        const twoPlayerSelect = document.querySelector(".two-p-container");
-        const onePlayerContainer = document.querySelector(".one-p-container")
+        const twoPlayerContainer = document.querySelector(".two-p-container")
+        const twoPlayerText = document.querySelector(".two-p-text");
+        const onePlayerContainer = document.querySelector(".one-p-text")
         const onePlayerEasy = document.querySelector(".easy-container");
         const onePlayerHard = document.querySelector(".hard-container");
         const continueButton = document.querySelector(".continue-button");
         const header = document.querySelector(".header");
 
-        twoPlayerSelect.addEventListener('click', () => {
+        twoPlayerContainer.addEventListener('click', () => {
             mode = "2P";
-            twoPlayerSelect.style.backgroundColor = "rgb(255, 178, 78)";
-            onePlayerContainer.style.backgroundColor = "rgb(255, 209, 111)";
-            onePlayerEasy.style.backgroundColor = "rgb(255, 209, 111)";
-            onePlayerHard.style.backgroundColor = "rgb(255, 209, 111)";
+            // twoPlayerSelect.style.backgroundColor = "rgb(255, 178, 78)";
+            // onePlayerContainer.style.backgroundColor = "rgb(255, 209, 111)";
+            // onePlayerEasy.style.backgroundColor = "rgb(255, 209, 111)";
+            // onePlayerHard.style.backgroundColor = "rgb(255, 209, 111)";
+            twoPlayerContainer.classList.add("side-selected");
+            twoPlayerText.classList.add("container-selected");
+            onePlayerContainer.classList.remove("container-selected");
+            onePlayerEasy.classList.remove("side-selected");
+            onePlayerHard.classList.remove("side-selected");
             const currentMode = document.querySelector(".mode");
             currentMode.textContent = mode;
             Gameboard.resetBoard();
@@ -343,10 +349,15 @@ const pageManager = (function() {
 
         onePlayerEasy.addEventListener('click', () => {
             mode = "1PEasy";
-            twoPlayerSelect.style.backgroundColor = "rgb(255, 209, 111)";
-            onePlayerContainer.style.backgroundColor = "rgb(255, 178, 78)";
-            onePlayerEasy.style.backgroundColor = "rgb(255, 178, 78)";
-            onePlayerHard.style.backgroundColor = "rgb(255, 209, 111)";
+            // twoPlayerSelect.style.backgroundColor = "rgb(255, 209, 111)";
+            // onePlayerContainer.style.backgroundColor = "rgb(255, 178, 78)";
+            // onePlayerEasy.style.backgroundColor = "rgb(255, 178, 78)";
+            // onePlayerHard.style.backgroundColor = "rgb(255, 209, 111)";
+            twoPlayerContainer.classList.remove("side-selected");
+            twoPlayerText.classList.remove("container-selected");
+            onePlayerContainer.classList.add("container-selected");
+            onePlayerEasy.classList.add("side-selected");
+            onePlayerHard.classList.remove("side-selected");
             const currentMode = document.querySelector(".mode");
             currentMode.textContent = mode;
             Gameboard.resetBoard();
@@ -354,10 +365,15 @@ const pageManager = (function() {
 
         onePlayerHard.addEventListener('click', () => {
             mode = "1PHard";
-            twoPlayerSelect.style.backgroundColor ="rgb(255, 209, 111)";
-            onePlayerContainer.style.backgroundColor = "rgb(255, 178, 78)";
-            onePlayerEasy.style.backgroundColor = "rgb(255, 209, 111)";
-            onePlayerHard.style.backgroundColor = "rgb(255, 178, 78)";
+            // twoPlayerSelect.style.backgroundColor ="rgb(255, 209, 111)";
+            // onePlayerContainer.style.backgroundColor = "rgb(255, 178, 78)";
+            // onePlayerEasy.style.backgroundColor = "rgb(255, 209, 111)";
+            // onePlayerHard.style.backgroundColor = "rgb(255, 178, 78)";
+            twoPlayerContainer.classList.remove("side-selected");
+            twoPlayerText.classList.remove("container-selected");
+            onePlayerContainer.classList.add("container-selected");
+            onePlayerEasy.classList.remove("side-selected");
+            onePlayerHard.classList.add("side-selected");
             const currentMode = document.querySelector(".mode");
             currentMode.textContent = mode;
             Gameboard.resetBoard();
