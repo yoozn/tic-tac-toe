@@ -1,7 +1,7 @@
 :root {
-    --container-colour: rgb(255, 235, 171);
-    --header-colour: rgb(255, 233, 134);
-    --sidebar-colour: rgb(255, 209, 111);
+    --container-colour: rgba(255, 235, 171, 0);
+    --header-colour: rgba(255, 233, 134);
+    --sidebar-colour: rgba(255, 209, 111);
 }
 
 * {
@@ -11,6 +11,11 @@
     /* border: 2px solid red; */
     font-family: 'Open Sans', sans-serif;
     font-family: 'Roboto', sans-serif;
+}
+
+body {
+    background: url("images/background.jpg");
+    background-size: 100%;
 }
 
 .container {
@@ -193,6 +198,9 @@
     width: 100vw;
     left:0;
     height: 90vh;
+    background-color: rgba(255, 255, 255, 0);
+    /* background: url("images/background.jpg");
+    background-size: cover; */
 }
 
 .gameboard-container {
