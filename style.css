@@ -70,10 +70,12 @@ body {
     padding-top: 25%;
     padding-bottom: 10%;
     font-size: 3rem;
+    user-select: none;
 }
 
 .header-text {
     display:grid;
+    user-select: none;
 }
 
 .continue-button {
@@ -92,10 +94,12 @@ body {
     text-align: center;
     font-size: 4rem;
     gap: 10%;
+    user-select: none;
 }
 
 .score-text {
     font-size: 12rem;
+    /* user-select: none; */
 }
 
 .footer {
@@ -128,6 +132,7 @@ body {
     font-size: 2.5rem;
     text-align: center;
     text-shadow: 3px 2px rgb(110, 109, 109);
+    user-select: none;
 }
 
 .logo-img {
@@ -181,7 +186,7 @@ body {
 .one-p-container {
     display:flex;
     flex-direction: column;
-    background-color: var(--sidebar-colour)
+    background-color: var(--sidebar-colour);
 }
 
 .one-p-inner-container {
@@ -201,6 +206,8 @@ body {
 .hard-text {
     /* padding-left: 25px; */
     font-size: 1.4rem;
+    user-select: none;
+    font-weight: bold;
 }
 
 .two-p-text,
@@ -209,6 +216,7 @@ body {
     padding-top: 10px;
     padding-left: 15px;
     font-weight: bold;
+    user-select: none;
 }
 
 
