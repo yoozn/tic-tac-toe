@@ -3,7 +3,9 @@
 const Player = (newName, newSymbol) => {
     let name = newName;
     let symbol = newSymbol;
-    let wins = 0;
+    let wins2P = 0;
+    let wins1PE = 0;
+    let wins1PH = 0;
 
     const setSymbol = (newSymbol) => {
         symbol = newSymbol;
@@ -15,10 +17,16 @@ const Player = (newName, newSymbol) => {
     }
     const getName = () => name;
 
-    const win = () => {
-        wins++;
+    const win = (mode) => {
+        if (mode == "2P") wins2P++;
+        else if (mode == "1PEasy") wins1PE++;
+        else if (mode == "1PHard") wins1PH++;
     }
-    const getWins = () => wins;
+    const getWins = (mode) => {
+        if (mode == "2P") return wins2P;
+        if (mode == "1PEasy") return wins1PE;
+        if (mode == "1PHard") return wins1PH;
+    };
 
     return {setSymbol, getSymbol, setName, getName, win, getWins};
 }
@@ -323,7 +331,6 @@ const pageManager = (function() {
     let mode = "2P"
     let pieceCount = 0;
     let showingHeader = false;
-
     const initialize = () => {
         Gameboard.createBoard();
 
@@ -397,6 +404,7 @@ const pageManager = (function() {
         })
 
         header.addEventListener('mouseover', () => {
+            updateHeader();
             if (!showingHeader){
                 winText.textContent = "";
                 continueButton.style.visibility = "hidden";
@@ -451,28 +459,43 @@ const pageManager = (function() {
     }
 
     const win = (player) => {
-        player.win();
+        player.win(mode);
         const winText = document.querySelector(".header-text");
         winText.textContent = `${player.getName()} won!`;
         showHeader();
     }
 
-    const showHeader = () => {
-        showingHeader = true;
-        const header = document.querySelector(".header");
+    const updateHeader = () => {
         const leftScore = document.querySelector(".score-left");
         const leftName = document.querySelector(".player-1");
         const rightScore = document.querySelector(".score-right");
         const rightName = document.querySelector(".player-2");
-        const continueButton = document.querySelector(".continue-button");
         const currentMode = document.querySelector(".mode");
-        const sidebar = document.querySelector(".sidebar");
 
         leftName.textContent = user.getName();
-        leftScore.textContent = user.getWins();
+        leftScore.textContent = user.getWins(mode);
         rightName.textContent = computer.getName();
-        rightScore.textContent = computer.getWins();
+        rightScore.textContent = computer.getWins(mode);
         currentMode.textContent = mode;
+    }
+
+    const showHeader = () => {
+        updateHeader();
+        showingHeader = true;
+        const header = document.querySelector(".header");
+        // const leftScore = document.querySelector(".score-left");
+        // const leftName = document.querySelector(".player-1");
+        // const rightScore = document.querySelector(".score-right");
+        // const rightName = document.querySelector(".player-2");
+        const continueButton = document.querySelector(".continue-button");
+        // const currentMode = document.querySelector(".mode");
+        const sidebar = document.querySelector(".sidebar");
+
+        // leftName.textContent = user.getName();
+        // leftScore.textContent = user.getWins(mode);
+        // rightName.textContent = computer.getName();
+        // rightScore.textContent = computer.getWins(mode);
+        // currentMode.textContent = mode;
         sidebar.classList.add("sidebar-left");
         continueButton.style.visibility = "visible";
         header.classList.add("header-show");
