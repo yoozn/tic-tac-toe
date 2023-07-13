@@ -286,7 +286,7 @@ body {
 
 .square:hover {
     transform:scale(1.1);
-    border-color: rgb(218, 141, 27);
+    border-color: rgb(255, 154, 40);
     background-color: rgba(0,0,0,0);
 }
 
