@@ -330,6 +330,7 @@ const pageManager = (function() {
         const onePlayerHard = document.querySelector(".hard-container");
         const continueButton = document.querySelector(".continue-button");
         const header = document.querySelector(".header");
+        const sidebar = document.querySelector(".sidebar");
 
         twoPlayerContainer.addEventListener('click', () => {
             mode = "2P";
@@ -381,10 +382,12 @@ const pageManager = (function() {
 
         continueButton.addEventListener('click', () => {
             const header = document.querySelector(".header");
+            const sidebar = document.querySelector(".sidebar")
             header.classList.remove("header-show");
             Gameboard.resetBoard();
             header.addEventListener("transitionend", () => {
                 showingHeader = false;
+                sidebar.classList.remove("sidebar-left");
             }, {once: true});
         })
 
@@ -392,11 +395,15 @@ const pageManager = (function() {
             if (!showingHeader){
                 continueButton.style.visibility = "hidden";
                 header.classList.add("header-hover")
+                sidebar.classList.add("sidebar-left");
             }
         })
 
         header.addEventListener('mouseleave', () => {
             header.classList.remove("header-hover");
+            header.addEventListener('transitionend', () => {
+                sidebar.classList.remove("sidebar-left");
+            }, {once: true})
         })
     }
 
@@ -453,12 +460,14 @@ const pageManager = (function() {
         const rightName = document.querySelector(".player-2");
         const continueButton = document.querySelector(".continue-button");
         const currentMode = document.querySelector(".mode");
+        const sidebar = document.querySelector(".sidebar");
 
         leftName.textContent = user.getName();
         leftScore.textContent = user.getWins();
         rightName.textContent = computer.getName();
         rightScore.textContent = computer.getWins();
         currentMode.textContent = mode;
+        sidebar.classList.add("sidebar-left");
         continueButton.style.visibility = "visible";
         header.classList.add("header-show");
     }
