@@ -88,10 +88,14 @@ const Gameboard = (function() {
                         if (pageManager.getPieceCount() > 4) {
                             if (pageManager.isPlayerTurn()) {
                                 won = checkWin(square, "user");
-                                tie = (pageManager.checkTie());
+                                if (!won) {
+                                    tie = (pageManager.checkTie());
+                                }
                         } else if (pageManager.getMode() == "2P") {
-                            checkWin(square, "computer");
-                            pageManager.checkTie();
+                            if (!checkWin(square, "computer")) 
+                            {
+                                pageManager.checkTie();
+                            }
                         }
                         // console.log({"won" : won});
                     }
@@ -329,6 +333,7 @@ const pageManager = (function() {
         const onePlayerEasy = document.querySelector(".easy-container");
         const onePlayerHard = document.querySelector(".hard-container");
         const continueButton = document.querySelector(".continue-button");
+        const winText = document.querySelector(".header-text");
         const header = document.querySelector(".header");
         const sidebar = document.querySelector(".sidebar");
 
@@ -393,6 +398,7 @@ const pageManager = (function() {
 
         header.addEventListener('mouseover', () => {
             if (!showingHeader){
+                winText.textContent = "";
                 continueButton.style.visibility = "hidden";
                 header.classList.add("header-hover")
                 sidebar.classList.add("sidebar-left");
